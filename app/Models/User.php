@@ -29,4 +29,18 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    // Relación 1:N (lado "1"): proyectos que el usuario ha creado (es el propietario).
+    public function projects()
+    {
+        return $this->hasMany(Project::class);
+    }
+
+    // Relación N:N: proyectos en los que el usuario participa.
+    // La tabla pivote (project_user) guarda además el rol y las horas.
+    public function participatingProjects()
+    {
+        return $this->belongsToMany(Project::class)
+                    ->withPivot('role', 'contribution_hours');
+    }
 }
