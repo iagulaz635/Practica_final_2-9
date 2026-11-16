@@ -12,13 +12,16 @@ class ProjectController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-        // with('owner') carga el propietario de todos los proyectos de una sola vez
-        $projects = Project::with('owner')->latest()->get();
+public function index()
+{
+    // Cargamos los propietarios y contamos los participantes
+    $projects = Project::with('owner')
+        ->withCount('participants')
+        ->latest()
+        ->get();
 
-        return view('projects.index', compact('projects'));
-    }
+    return view('projects.index', compact('projects'));
+}
 
     /**
      * Show the form for creating a new resource.
