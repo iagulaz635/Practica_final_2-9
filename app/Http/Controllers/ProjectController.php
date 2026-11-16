@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Project;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -46,13 +47,19 @@ class ProjectController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
-    {
-        // Cargamos también el propietario y los participantes (con role y horas)
-        $project = Project::with(['owner', 'participants'])->findOrFail($id);
+public function show(string $id)
+{
+    // Cargamos también el propietario y los participantes (con role y horas)
+    $project = Project::with(['owner', 'participants'])->findOrFail($id);
 
-        return view('projects.show', compact('project'));
-    }
+    // Usuarios que se pueden añadir: todos menos el propietario y los que ya participan
+    $availableUsers = User::where('id', '!=', $project->user_id)
+                          ->whereNotIn('id', $project->participants->pluck('id'))
+                          ->orderBy('name')
+                          ->get();
+
+    return view('projects.show', compact('project', 'availableUsers'));
+}
 
     /**
      * Show the form for editing the specified resource.
